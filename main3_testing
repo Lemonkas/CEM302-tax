@@ -1,0 +1,173 @@
+#single_or_joint = input("single or joint")
+#income_a = input('Enter your income')
+#income_b = input('Enter your income')
+
+#option = input("Single or Joint")
+#income = input("Enter your income")
+less_basic_allowrence = 132000
+
+
+ind_tax = 0
+ind_tax_b = 0
+M_P_A = 264000
+test_cal_1 = 0 
+
+'''Compare less MPF only'''
+def pro_fix_comp(income, ind_tax):
+    a = income*0.15
+    b = ind_tax
+    if b < a:
+      return(ind_tax)
+    else:
+      return(a)
+
+
+''' Calculate user's tax using Progressive tax method'''
+def tax_calculation(income, net_chargeable_income):
+  a = net_chargeable_income
+  b = income
+  global ind_tax
+  #print('this is' + str(a))
+  if a >=1 and a<=50000:
+    #print('Your tax is ' + str( a*0.02))
+    ind_tax = a*0.02
+    return(a*0.02)
+  elif a >= 50001 and a <= 100000:
+    #print('Your tax is ' + str( (a-50000)*0.06+1000))
+    ind_tax = (a-50000)*0.06+1000
+    return((a-50000)*0.06+1000)
+  elif a >=100001 and a <= 150000:
+    #print('Your tax is ' + str((a-100000)*0.1+ 4000))
+    ind_tax = (a-100000)*0.1+ 4000
+    return((a-100000)*0.1+ 4000)
+  elif a >= 150001 and a <= 200000:
+    #print('Your tax is ' + str((a-150000)*0.14+9000))
+    ind_tax = (a-150000)*0.14+9000
+    return((a-150000)*0.14+9000)
+  elif a <= 0:
+    ind_tax = 0
+    return(0)
+  else:
+    #print('Your tax is '+ str((a-200000)*0.17+16000))
+    ind_tax = (a-200000)*0.17+16000
+    ind_tax = pro_fix_comp(b, ind_tax)
+    c = pro_fix_comp(b, ind_tax)
+    return(c)
+
+'''Calculate will user need to pay Tax'''
+def tax_or_not(income,net_chargeable_income):
+    global ind_tax
+    if (int(income) <= 132000):
+      #print('No tax needed')
+      #return('No tax needed')# For Test
+      ind_tax = 0
+    elif (int(income) > 132000 ):
+      #print('tax needed')
+      tax_calculation(int(income), int(net_chargeable_income))
+      #return('tax needed')# For Test
+    else:
+      print('Please enter a valid number')    
+
+'''#MPF CAP calculation'''
+def cal_1(income):
+    global ind_tax
+    less_MPF = int(income)*0.05
+    if less_MPF <= 18000:
+        net_chargeable_income = int(income) - less_MPF - less_basic_allowrence
+        income_less_mpf = int(income) - less_MPF
+        tax_or_not(income_less_mpf, net_chargeable_income)
+        return ind_tax # for test
+    elif less_MPF > 18000:
+        MPF_Cap = 18000
+        net_chargeable_income = int(income) - MPF_Cap - less_basic_allowrence
+        income_less_mpf = int(income) - MPF_Cap
+        tax_or_not(income_less_mpf, net_chargeable_income)
+        return ind_tax # for test
+
+'''MPF CAP for joint Calculation'''
+def cal_2(income):
+    global ind_tax_b
+    ind_tax_b = 0
+    less_MPF = int(income)*0.05
+    if less_MPF <= 18000:
+        net_chargeable_income = int(income) - less_MPF 
+        #ind_tax_b = net_chargeable_income
+        return net_chargeable_income
+    elif less_MPF > 18000:
+        MPF_Cap = 18000
+        net_chargeable_income = int(income) - MPF_Cap
+        #ind_tax_b = net_chargeable_income
+        return net_chargeable_income
+    else:
+        print('Please enter a valid number')
+
+def joint_calculation(income_a, income_b):
+    global M_P_A
+    nti_a = 0
+    nti_b = 0
+    #less_incomeA = int(income_a)*0.05
+    #less_incomeB = int(income_b)*0.05
+    #net_total_income_a = int(income_a) - less_incomeA
+    #net_total_income_b = int(income_b) - less_incomeB
+    nti_a = cal_2(income_a)
+    nti_b = cal_2(income_b)
+    #print('nta' + str(nti_a))
+    #print('ntb' + str(nti_b))
+    net_charge_combined = nti_a  + nti_b
+    #print('n_C_C ' + str(net_charge_combined))
+    net_charge_income = net_charge_combined - M_P_A
+    tax_payable = tax_calculation(net_charge_combined, net_charge_income)
+    return(tax_payable)
+    
+def split_cal(income_a, income_b):
+    global ind_tax
+    tax_a = 0
+    tax_b = 0
+    tax_joint = 0
+    ind_tax = 0
+    cal_1(income_a)
+    tax_a = ind_tax
+    ind_tax = 0
+    cal_1(income_b)
+    tax_b = ind_tax
+    split_tax = tax_a + tax_b
+    print('split tax is ' + str(split_tax))
+    comb_tax = joint_calculation(income_a,income_b)
+    print('combined tax is ' + str(comb_tax))
+    compare_tax(split_tax, comb_tax)
+    test_var = compare_tax(split_tax, comb_tax) # test only
+    return(test_var) # test only
+
+def compare_tax(split_tax, comb_tax):
+    if split_tax > comb_tax:
+      print('Recommend: comb_tax ' + str(comb_tax))
+      return(comb_tax)
+    elif split_tax < comb_tax:
+      print('Recommend: split tax ' + str(split_tax))
+      #print(split_tax)
+      return(split_tax)
+    elif split_tax < 0 and comb_tax < 0:
+      print('No tax needed')
+      return(split_tax)
+    else:
+      print('Recommend: both ' + str(split_tax) )
+      return(split_tax)
+      
+def single_or_joint(option):
+    global ind_tax
+    if option == "Single":
+        income = input("Enter your income")
+        #if type(income) != int:
+          #raise TypeError("Only integers are allowed")
+          #print("Only integers are allowed")
+          #return("Only integers are allowed") # For test
+        cal_1(income)
+        print('Your Tax is: ' + str(ind_tax))
+    elif option == "Joint":
+        income_a = input("Enter Your income")
+        income_b = input("Enter Your Partner's income")
+        split_cal(income_a, income_b)
+
+if __name__ == "__main__":
+    option = input("Single or Joint")
+    single_or_joint(option)
