@@ -1,0 +1,73 @@
+import unittest   # The test framework
+from main3_testing import split_cal, cal_1
+
+'''For the testing I would like to test the whole thing functions by functions in order to determine which part created the error'''
+
+'''The first function to test would be '''
+
+class test_tax(unittest.TestCase):
+    
+    def test_cal_10(self):
+        self.assertEqual(cal_1(540000), 48300)
+
+    '''Total Annual Income input is $0 everything will be stated as $0, this prevents Negative figures appearing causing the amount to be wrong.'''
+    def test_cal_1_0(self):
+        self.assertEqual(cal_1(0), 0)
+
+    '''Single tax assessment, below total allowrence'''
+    def test_cal_1_1(self):
+        self.assertEqual(cal_1(100000), 0)
+
+    '''Progressive tax: Net chargeable income on the first quadrant (below 50,000)'''
+    def test_cal_1_2(self):
+        self.assertEqual(cal_1(150000), 210)
+
+    '''Progressive tax: Net chargeable income on the second quadrant (below 100,000), first quadrant Cap. $1000'''
+    def test_cal_1_3(self):
+        self.assertEqual(cal_1(200000), 1480)
+
+    '''Progressive tax:Net chargeable income on the third quadrant (below 150,000), second quadrant Cap. $3000'''
+    def test_cal_1_4(self):
+        self.assertEqual(cal_1(250000), 4550)
+
+    '''Progressive tax:Net chargeable income on the fourth quadrant (below 200,000), third quadrant Cap. $5000'''
+    def test_cal_1_5(self):
+        self.assertEqual(cal_1(300000), 9420)
+
+    '''Progressive tax:Net chargeable income above 200,000, fourth quadrant Cap. $7000'''
+    def test_cal_1_6(self):
+        self.assertEqual(cal_1(350000), 16085)    
+
+    '''Extream value uses fixed rate'''
+    def test_cal_1_7(self):
+        self.assertEqual(cal_1(5400000), 807300)
+
+    '''Single tax assessment on Extreme High value that uses the fixed rate'''
+    def test_cal_1_10(self):
+        self.assertEqual(cal_1(2022000), 300240)
+
+    '''Cases where split taxation is recommended'''
+    def test_split_cal_0(self):
+        self.assertEqual(split_cal(2500000, 500000), 413800)
+
+    '''Cases where joint taxation is recommended'''
+    def test_split_cal_1(self):
+        self.assertEqual(split_cal(2500000, 200000), 373780)
+
+    '''Cases where both are equals'''
+    def test_split_cal_2(self):
+        self.assertEqual(split_cal(2500000, 5000000), 1119600)
+
+    '''Joint tax on extreme high value that uses the fiexed rate'''
+    def test_split_cal_3(self):
+        self.assertEqual(split_cal(2022000, 1000000), 426740)
+
+    '''When both income are 0s'''
+    def test_split_cal_4(self):
+        self.assertEqual(split_cal(0, 0), 0)
+
+    '''When both income are under the tax allowrence'''
+    def test_split_cal_5(self):
+        self.assertEqual(split_cal(120000, 120000), 0)
+if __name__ == '__main__':
+    unittest.main()
